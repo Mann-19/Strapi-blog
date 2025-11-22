@@ -9,13 +9,6 @@ export default async function Home() {
     <main className="max-w-4xl mx-auto p-10">
       <div className="flex justify-between items-center mb-8">
         <h1 className="text-4xl font-bold">My Blog</h1>
-        {/* We will create this page later */}
-        <Link 
-          href="/create" 
-          className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"
-        >
-          Create New Post
-        </Link>
       </div>
 
       <div className="grid gap-6">
