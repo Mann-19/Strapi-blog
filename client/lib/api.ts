@@ -11,6 +11,20 @@ export async function fetchAPI(path: string) {
   return json.data;
 }
 
+export function getStrapiMedia(url: string | null) {
+  if (url == null) {
+    return null;
+  }
+  if (url.startsWith("data:")) {
+    return url;
+  }
+  if (url.startsWith("http") || url.startsWith("//")) {
+    return url;
+  }
+  // Otherwise prepend the Strapi URL
+  return `${STRAPI_URL}${url}`;
+}
+
 // Get all posts
 export async function getPosts() {
   return fetchAPI("posts?populate=*");
@@ -29,22 +43,4 @@ export async function getAuthors() {
 // Get Categories
 export async function getCategories() {
   return fetchAPI("categories");
-}
-
-// Create a new Post
-export async function createPost(payload: any) {
-  const res = await fetch(`${STRAPI_URL}/api/posts`, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-    },
-    // Strapi requires the body to be wrapped in a "data" object
-    body: JSON.stringify({ data: payload }),
-  });
-
-  if (!res.ok) {
-    throw new Error("Failed to create post");
-  }
-
-  return res.json();
 }
