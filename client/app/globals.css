@@ -1,2 +1,117 @@
 @import "tailwindcss";
-@tailwind utilities;
+@plugin "@tailwindcss/typography";
+
+/* 1. CONFIGURE THEME */
+@theme {
+  /* Map CSS variables to Tailwind Utilities */
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  
+  --color-destructive: var(--destructive);
+  --color-destructive-foreground: var(--destructive-foreground);
+  
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+
+  /* Custom Radiuses */
+  --radius-lg: var(--radius);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-sm: calc(var(--radius) - 4px);
+
+  /* Fonts */
+  --font-display: 'Playfair Display', serif;
+  --font-body: 'Lora', serif;
+}
+
+/* 2. DEFINE VARIABLES */
+:root {
+  /* Editorial Design System */
+  --background: hsl(32 25% 97%);
+  --foreground: hsl(0 0% 10%);
+
+  --card: hsl(0 0% 100%);
+  --card-foreground: hsl(0 0% 10%);
+
+  --primary: hsl(0 0% 10%);
+  --primary-foreground: hsl(32 25% 97%);
+
+  --accent: hsl(14 70% 52%);
+  --accent-foreground: hsl(0 0% 100%);
+
+  --muted: hsl(32 15% 92%);
+  --muted-foreground: hsl(0 0% 40%);
+
+  --border: hsl(32 20% 88%);
+  --input: hsl(32 20% 88%);
+  --ring: hsl(14 70% 52%);
+
+  --radius: 0.25rem;
+}
+
+.dark {
+  --background: hsl(0 0% 10%);
+  --foreground: hsl(32 25% 97%);
+  --card: hsl(0 0% 12%);
+  --card-foreground: hsl(32 25% 97%);
+  --primary: hsl(32 25% 97%);
+  --primary-foreground: hsl(0 0% 10%);
+  --accent: hsl(14 70% 52%);
+  --accent-foreground: hsl(0 0% 100%);
+  --muted: hsl(0 0% 15%);
+  --muted-foreground: hsl(0 0% 60%);
+  --border: hsl(0 0% 20%);
+  --input: hsl(0 0% 20%);
+  --ring: hsl(14 70% 52%);
+}
+
+/* 3. BASE STYLES */
+@layer base {
+  * {
+    border-color: var(--border);
+  }
+  
+  body {
+    background-color: var(--background);
+    color: var(--foreground);
+    font-family: var(--font-body);
+  }
+}
+
+/* 4. COMPONENT UTILITIES */
+
+@utility font-display {
+  font-family: var(--font-display);
+}
+
+@utility transition-smooth {
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* FIX: Nest the hover state inside the utility */
+@utility hover-lift {
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  
+  &:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 12px 24px -6px rgba(0, 0, 0, 0.15);
+  }
+}

@@ -1,88 +1,73 @@
 'use client';
 
-import { useState } from 'react';
-import Link from 'next/link';
-import Image from 'next/image';
-import { getStrapiMedia } from '@/lib/api';
+import { useState, useMemo } from "react";
+import Hero from "./Hero";
+import BlogCard from "./BlogCard";
+import CategoryFilter from "./CategoryFilter";
 
 export default function PostList({ posts }: { posts: any[] }) {
-  const [search, setSearch] = useState('');
+  const [activeCategory, setActiveCategory] = useState("All");
 
-  // Filter posts based on search text (checking Title or Category)
-  const filteredPosts = posts.filter((post) => {
-    const query = search.toLowerCase();
-    return (
-      post.title.toLowerCase().includes(query) ||
-      post.category?.name.toLowerCase().includes(query)
-    );
-  });
+  // 1. Extract unique categories from the real data
+  const categories = useMemo(() => {
+    const uniqueCategories = new Set(posts.map(p => p.category?.name || "Uncategorized"));
+    return ["All", ...Array.from(uniqueCategories)];
+  }, [posts]);
+
+  // 2. Filter logic
+  const filteredPosts = activeCategory === "All"
+    ? posts
+    : posts.filter(post => (post.category?.name || "Uncategorized") === activeCategory);
 
   return (
-    <div>
-      {/* Search Bar */}
-      <div className="mb-8">
-        <input
-          type="text"
-          placeholder="Search posts by title or category..."
-          className="w-full p-3 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-          value={search}
-          onChange={(e) => setSearch(e.target.value)}
+    <div className="min-h-screen bg-white text-gray-900">
+      
+      {/* Hero Section */}
+      <Hero />
+      
+      <main id="content" className="container mx-auto px-6 py-12">
+        
+        {/* Section Header */}
+        <div className="text-center mb-16">
+          <h2 className="text-4xl font-bold mb-4 tracking-tight">Latest Articles</h2>
+          <p className="text-gray-500 text-lg max-w-2xl mx-auto">
+            Curated thoughts and perspectives on the things that matter.
+          </p>
+        </div>
+
+        {/* Category Filter */}
+        <CategoryFilter
+          categories={categories}
+          activeCategory={activeCategory}
+          onCategoryChange={setActiveCategory}
         />
-      </div>
 
-      {/* Grid of Posts */}
-      <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-        {filteredPosts.length === 0 && <p className="text-gray-500">No posts found.</p>}
+        {/* Blog Grid */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+          {filteredPosts.map((post) => (
+            // We use documentId (v5) or id (v4) for the key
+            <BlogCard key={post.documentId || post.id} post={post} />
+          ))}
+        </div>
 
-        {filteredPosts.map((post) => {
-          // Handle Image URL
-          const imageUrl = getStrapiMedia(post.coverImage?.url);
+        {/* No Results */}
+        {filteredPosts.length === 0 && (
+          <div className="text-center py-20">
+            <p className="text-gray-400 text-lg">
+              No articles found in this category.
+            </p>
+          </div>
+        )}
+      </main>
 
-          return (
-            <div key={post.id} className="border rounded-lg overflow-hidden shadow-sm hover:shadow-md transition bg-white flex flex-col">
-              
-              {/* Cover Image */}
-              {imageUrl ? (
-                <div className="relative h-48 w-full">
-                   <Image 
-                     src={imageUrl} 
-                     alt={post.title} 
-                     fill 
-                     className="object-cover"
-                   />
-                </div>
-              ) : (
-                <div className="h-48 w-full bg-gray-200 flex items-center justify-center text-gray-400">
-                  No Image
-                </div>
-              )}
-
-              <div className="p-6 flex-1 flex flex-col">
-                <div className="flex justify-between items-start mb-2">
-                    <span className="bg-blue-100 text-blue-800 text-xs px-2 py-1 rounded-full uppercase font-bold tracking-wide">
-                        {post.category?.name || 'News'}
-                    </span>
-                </div>
-
-                <h2 className="text-xl font-bold mb-2 line-clamp-2">{post.title}</h2>
-                
-                <p className="text-gray-600 text-sm mb-4 line-clamp-3">
-                    {post.content}
-                </p>
-
-                <div className="mt-auto flex items-center justify-between border-t pt-4">
-                    <span className="text-xs text-gray-500">
-                        By {post.author?.name || 'Admin'}
-                    </span>
-                    <Link href={`/post/${post.documentId || post.id}`} className="text-blue-600 text-sm font-semibold hover:underline">
-                    Read Article →
-                    </Link>
-                </div>
-              </div>
-            </div>
-          );
-        })}
-      </div>
+      {/* Footer */}
+      <footer className="border-t border-gray-100 py-12 mt-20">
+        <div className="container mx-auto px-6 text-center">
+          <p className="text-gray-400">
+            © 2024 Editorial. All stories worth your time.
+          </p>
+        </div>
+      </footer>
     </div>
   );
 }
